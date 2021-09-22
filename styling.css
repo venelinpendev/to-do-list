@@ -13,7 +13,7 @@
 }
 
 /* Hide the browser's default checkbox */
-.container input {
+.input_checkbox {
   position: absolute;
   opacity: 0;
   cursor: pointer;
