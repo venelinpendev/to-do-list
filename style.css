@@ -26,7 +26,7 @@
   transform: rotate(45deg);
 }
 
-label[for=circle] {
+.todoItemLabel {
   font-size: 25px;
   margin: 10px 0 0 40px;
 }
@@ -36,7 +36,36 @@ label[for=circle] {
   list-style-type: none;
 }
 
+.list_item {
+  padding: 5px;
+  border-bottom: black solid 1px;
+  display: block;
+  overflow: hidden;
+}
+
 input[type=number] {
   font-size: 20px;
   width: 100px;
+}
+
+.arrow {
+  border: solid black;
+  border-width: 0 3px 3px 0;
+  display: inline-block;
+  padding: 3px;
+  transform: rotate(45deg);
+}
+
+.newItemInput {
+  font-size: 20px;
+  margin: 10px 0 0 40px;
+}
+
+.insertNewButton {
+  font-size: 20px;
+}
+
+.close {
+  size: 20px;
+  cursor: pointer;
 }

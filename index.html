@@ -4,44 +4,149 @@
   <meta charset="utf-8">
   <title> To Do List </title>
   <link rel="stylesheet" href="style.css">
+
+  <script>
+    var present = true
+    function hideOrShow() {
+      var elements = document.getElementsByClassName("list_item");
+      var arrow = document.getElementById("arrow");
+      for(var i=0; i < elements.length; i++) {
+        if (present) {
+          elements[i].style.display="none";
+          arrow.style.transform = "rotate(-45deg)";
+        }
+        else {
+          elements[i].style.display="block";
+          arrow.style.transform = "rotate(45deg)";
+        }
+      }
+      present = !present;
+    }
+
+    var numberOfClidren = 2;
+    function createNewItem() {
+      var li = document.createElement("li");
+      li.className = "list_item";
+
+      var checkmark = document.createElement("span");
+      checkmark.className = "checkmark";
+
+      var circle = document.createElement("span");
+      circle.className = "circle";
+      checkmark.appendChild(circle);
+
+      var tick = document.createElement("span");
+      tick.className = "tick";
+      checkmark.appendChild(tick);
+
+      li.appendChild(checkmark);
+
+      var label = document.createElement("label");
+      label.innerHTML = document.getElementsByClassName("newItemInput")[0].value;
+      label.className = "todoItemLabel";
+      li.appendChild(label);
+
+      var quantity = document.createElement("input");
+      quantity.type = "number";
+      li.appendChild(quantity);
+
+
+      var deleteButton = document.createElement("SPAN");
+      var txt = document.createTextNode("\u00D7");
+      deleteButton.className = "close";
+      deleteButton.appendChild(txt);
+      deleteButton.onclick = function() {
+        var div = this.parentElement;
+        div.style.display = "none";
+      }
+
+      li.appendChild(span);
+
+      var list = document.getElementsByClassName("list")[0];
+
+      list.appendChild(li);
+      numberOfClidren++;
+    }
+
+  </script>
+
 </head>
 
 <body>
   <h1>TO DO LIST</h1>
+
+  <span id="arrow" class="arrow" onclick="hideOrShow()"></span>
   <h2>Shopping List</h2>
 
   <ul class="list">
-    <li>
+    <li class="list_item">
       <span class="checkmark">
         <span class="circle"></span>
         <span class="tick"></span>
       </span>
-      <label for="circle">Apples</label>
-      <input type="number">
+      <input type="text" class="newItemInput">
+      <input type="button" class="insertNewButton" value="Add" onclick="createNewItem()">
     </li>
 
-    <hr>
-
-    <li>
+    <li class="list_item">
       <span class="checkmark">
         <span class="circle"></span>
         <span class="tick"></span>
       </span>
-      <label for="circle">Potatoes</label>
+      <label for="circle" class="todoItemLabel">Apples</label>
       <input type="number">
     </li>
+
+    <li class="list_item">
+      <span class="checkmark">
+        <span class="circle"></span>
+        <span class="tick"></span>
+      </span>
+      <label for="circle" class="todoItemLabel">Potatoes</label>
+      <input type="number">
+    </li>
+
   </ul>
 
   <h2>Gas bill</h2>
   <ul class="list">
-    <li>
+    <li class="list_item">
       <span class="checkmark">
         <span class="circle"></span>
         <span class="tick"></span>
       </span>
-      <label for="circle">Pay the bill</label>
+      <label for="circle" class="todoItemLabel">Pay the bill</label>
       <input type="number">
     </li>
   </ul>
+
+<script>
+  var myNodelist = document.getElementsByClassName("list_item");
+  var i;
+  for (i = 1; i < myNodelist.length; i++) {
+    // add edit button
+    /*var editButton = document.createElement("input");
+    editButton.type = "button";
+    editButton.value = "Edit";
+    deleteButton.onclick = function() {
+
+    }
+    myNodelist[i].appendChild(editButton);
+    */
+
+    // add delete button
+    var deleteButton = document.createElement("span");
+    var txt = document.createTextNode("\u00D7");
+    deleteButton.className = "close";
+    deleteButton.appendChild(txt);
+    deleteButton.onclick = function() {
+      var div = this.parentElement;
+      div.style.display = "none";
+    }
+    myNodelist[i].appendChild(deleteButton);
+  }
+
+
+</script>
 </body>
 </html>
