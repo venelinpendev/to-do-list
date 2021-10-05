@@ -69,3 +69,13 @@ input[type=number] {
   size: 20px;
   cursor: pointer;
 }
+
+.list_title_label {
+  font-size: 25px;
+  margin-left: 10px;
+}
+
+.list_title {
+  display: flex;
+  align-items: center;
+}
