@@ -1,19 +1,18 @@
+// Initial set up for all Add buttons
 var listAddButtons = document.getElementsByClassName("insertNewButton");
 for (var i = 0; i < listAddButtons.length; i++) {
   listAddButtons[i].onclick = function() {
 
     var li = document.createElement("li");
     li.className = "list_item";
-    li.onclick = function() {
-      var checkmark = this.firstChild;
-      for (var child = checkmark.firstChild; child != null; child = child.nextElementSibling) {
-        console.log(child);
-        child.style.borderColor = "green";
-      }
-    }
 
     var checkmark = document.createElement("span");
     checkmark.className = "checkmark";
+    checkmark.onclick = function() {
+      for (var child = this.firstChild; child != null; child = child.nextElementSibling) {
+        child.style.borderColor = "green";
+      }
+    }
 
     var circle = document.createElement("span");
     circle.className = "circle";
@@ -31,16 +30,19 @@ for (var i = 0; i < listAddButtons.length; i++) {
     li.appendChild(label);
     document.getElementsByClassName("newItemInput")[0].value = "";
 
+    // by default hidden at first bcs its = 0
     var quantity = document.createElement("input");
     quantity.type = "number";
+    quantity.style.display = "none";
     li.appendChild(quantity);
 
     var editButton = document.createElement("input");
     editButton.type = "button";
     editButton.value = "Edit";
     editButton.onclick = function() {
-      label = this.previousElementSibling.previousElementSibling;
-      tick = label.previousElementSibling;
+      var quantity = this.previousElementSibling;
+      var label = quantity.previousElementSibling;
+      var tick = label.previousElementSibling;
 
       if (label.style.display == "none") {
         label.style.display = "inline";
@@ -48,6 +50,11 @@ for (var i = 0; i < listAddButtons.length; i++) {
         textBox = label.previousElementSibling;
         label.innerHTML = textBox.value;
         textBox.remove();
+
+        if (quantity.value == 0) {
+          quantity.style.display = "none";
+        }
+        quantity.setAttribute("readonly", "true");
       }
       else {
         label.style.display = "none";
@@ -58,6 +65,9 @@ for (var i = 0; i < listAddButtons.length; i++) {
         textBox.value = label.innerHTML;
 
         label.parentNode.insertBefore(textBox, label);
+
+        quantity.style.display = "inline";
+        quantity.removeAttribute("readonly");
       }
     }
     li.appendChild(editButton);
@@ -77,32 +87,6 @@ for (var i = 0; i < listAddButtons.length; i++) {
     list.appendChild(li);
   }
 }
-
-// Initial list setup (hide/show button)
-
-var lists = document.getElementsByClassName("list");
-var list_title_boxes = document.getElementsByClassName("list_title_box");
-var i;
-
-for (i = 0; i < lists.length; i++) {
-  collapseButton = document.createElement("span");
-  collapseButton.className = "arrow";
-  collapseButton.onclick = function() {
-    var element;
-    for (element = this.parentNode.nextElementSibling; element != null; element = element.nextElementSibling) {
-      if (element.style.display != "none") {
-        element.style.display = "none";
-        collapseButton.style.transform = "rotate(-45deg)";
-      }
-      else {
-        element.style.display="block";
-        collapseButton.style.transform = "rotate(45deg)";
-      }
-    }
-  }
-  list_title_boxes[i].insertBefore(collapseButton, list_title_boxes[i].firstChild);
-}
-
 
 function createNewList() {
   var ul = document.createElement("ul");
@@ -133,15 +117,19 @@ function createNewList() {
   ul.appendChild(label);
   document.getElementsByClassName("newListInput")[0].value = "";
 
+  // add delete button for the list
+  var deleteButton = document.createElement("span");
+  var txt = document.createTextNode("\u00D7");
+  deleteButton.className = "close";
+  deleteButton.appendChild(txt);
+  deleteButton.onclick = function() {
+    var div = this.parentElement;
+    div.style.display = "none";
+  }
+  ul.appendChild(deleteButton);
+
   var li = document.createElement("li");
   li.className = "list_item";
-  li.onclick = function() {
-    var checkmark = this.firstChild;
-    for (var child = checkmark.firstChild; child != null; child = child.nextElementSibling) {
-      console.log(child);
-      child.style.borderColor = "green";
-    }
-  }
 
   var input = document.createElement("input");
   input.type = "text";
@@ -156,17 +144,14 @@ function createNewList() {
 
     var li = document.createElement("li");
     li.className = "list_item";
-    li.onclick = function() {
-      var checkmark = this.firstChild;
-      for (var child = checkmark.firstChild; child != null; child = child.nextElementSibling) {
-        console.log(child);
-        child.style.borderColor = "green";
-      }
-    }
 
     var checkmark = document.createElement("span");
     checkmark.className = "checkmark";
-
+    checkmark.onclick = function() {
+      for (var child = this.firstChild; child != null; child = child.nextElementSibling) {
+        child.style.borderColor = "green";
+      }
+    }
     var circle = document.createElement("span");
     circle.className = "circle";
     checkmark.appendChild(circle);
@@ -186,14 +171,16 @@ function createNewList() {
 
     var quantity = document.createElement("input");
     quantity.type = "number";
+    quantity.style.display = "none";
     li.appendChild(quantity);
 
     var editButton = document.createElement("input");
     editButton.type = "button";
     editButton.value = "Edit";
     editButton.onclick = function() {
-      label = this.previousElementSibling.previousElementSibling;
-      tick = label.previousElementSibling;
+      var quantity = this.previousElementSibling;
+      var label = quantity.previousElementSibling;
+      var tick = label.previousElementSibling;
 
       if (label.style.display == "none") {
         label.style.display = "inline";
@@ -201,6 +188,11 @@ function createNewList() {
         textBox = label.previousElementSibling;
         label.innerHTML = textBox.value;
         textBox.remove();
+
+        if (quantity.value == 0) {
+          quantity.style.display = "none";
+        }
+        quantity.setAttribute("readonly", "true");
       }
       else {
         label.style.display = "none";
@@ -211,6 +203,9 @@ function createNewList() {
         textBox.value = label.innerHTML;
 
         label.parentNode.insertBefore(textBox, label);
+
+        quantity.style.display = "inline";
+        quantity.removeAttribute("readonly");
       }
     }
     li.appendChild(editButton);
@@ -291,7 +286,7 @@ for (i = 1; i < myNodelist.length; i++) {
   }
   myNodelist[i].appendChild(editButton);
 
-  // add delete button
+  // add delete button for a list item
   var deleteButton = document.createElement("span");
   var txt = document.createTextNode("\u00D7");
   deleteButton.className = "close";
@@ -301,4 +296,39 @@ for (i = 1; i < myNodelist.length; i++) {
     div.style.display = "none";
   }
   myNodelist[i].appendChild(deleteButton);
+}
+
+// Initial list setup (hide/show button)
+var lists = document.getElementsByClassName("list");
+var list_title_boxes = document.getElementsByClassName("list_title_box");
+var i;
+
+for (i = 0; i < lists.length; i++) {
+  collapseButton = document.createElement("span");
+  collapseButton.className = "arrow";
+  collapseButton.onclick = function() {
+    var element;
+    for (element = this.parentNode.nextElementSibling; element != null; element = element.nextElementSibling) {
+      if (element.style.display != "none") {
+        element.style.display = "none";
+        collapseButton.style.transform = "rotate(-45deg)";
+      }
+      else {
+        element.style.display="block";
+        collapseButton.style.transform = "rotate(45deg)";
+      }
+    }
+  }
+  list_title_boxes[i].insertBefore(collapseButton, list_title_boxes[i].firstChild);
+
+  // add delete button to existing parent items
+  var deleteButton = document.createElement("span");
+  var txt = document.createTextNode("\u00D7");
+  deleteButton.className = "close";
+  deleteButton.appendChild(txt);
+  deleteButton.onclick = function() {
+    var div = this.parentNode.parentNode;
+    div.style.display = "none";
+  }
+  list_title_boxes[i].appendChild(deleteButton);
 }
