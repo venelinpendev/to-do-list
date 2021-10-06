@@ -7,6 +7,7 @@
 }
 
 .checkmark {
+  margin-left: 10px;
   cursor: pointer;
 }
 
@@ -28,7 +29,7 @@
 
 .todoItemLabel {
   font-size: 25px;
-  margin: 10px 0 0 40px;
+  margin: 10px 10px 0 40px;
 }
 
 .list {
@@ -72,7 +73,7 @@ input[type=number] {
 
 .list_title_label {
   font-size: 25px;
-  margin-left: 10px;
+  margin-left: 40px;
 }
 
 .list_title {
