@@ -1,6 +1,13 @@
-function createNewList() {
+var currentParentID = 0;
+var currentChildID = 0;
+
+function createNewList(listName, initialQuantity) {
   var ul = document.createElement("ul");
   ul.className = "list";
+
+  // set up the parent item ID
+  ul.id = "parentItem_" + currentParentID;
+  currentParentID++;
 
   // parent Button -------------------------------------------------------------
   var parentListItem = document.createElement("li");
@@ -12,15 +19,14 @@ function createNewList() {
   collapseButton.className = "arrow";
   collapseButton.onclick = function() {
     var childrenItems = this.parentNode.parentNode.children;
-    console.log(this);
     for (var i = 1; i < childrenItems.length; i++) {
       if (childrenItems[i].style.display != "none") {
         childrenItems[i].style.display = "none";
-        collapseButton.style.transform = "rotate(-45deg)";
+        this.style.transform = "rotate(-45deg)";
       }
       else {
         childrenItems[i].style.display="block";
-        collapseButton.style.transform = "rotate(45deg)";
+        this.style.transform = "rotate(45deg)";
       }
     }
   }
@@ -46,17 +52,24 @@ function createNewList() {
 
   // label for the parent item (part of parent list item)
   var label = document.createElement("label");
-  label.innerHTML = document.getElementsByClassName("newListInput")[0].value;
+  if (listName) {
+    label.innerHTML = listName;
+  }
+  else {
+    label.innerHTML = document.getElementsByClassName("newListInput")[0].value;
+  }
   label.className = "list_title_label";
   parentListItem.appendChild(label);
   document.getElementsByClassName("newListInput")[0].value = "";
 
-  console.log(label.innerHTML);
-
   // quantity for the parent item
   var quantity = document.createElement("input");
   quantity.type = "number";
-  quantity.style.display = "none";
+  if (initialQuantity) {
+    quantity.value = initialQuantity;
+  } else {
+    quantity.style.display = "none";
+  }
   parentListItem.appendChild(quantity);
 
   // edit button for the parent item
@@ -131,11 +144,18 @@ function createNewList() {
   document.body.appendChild(ul);
 }
 
-function createNewChild() { //--------------------------------------------------
+function createNewChild(parentID, itemName, initialQuantity) { //---------------
+  if (typeof parentID == "number") {
+    var parentItem = document.getElementById("parentItem_" + parentID);
+  }
 
   // create new child item on click
   var li = document.createElement("li");
   li.className = "list_item";
+
+  // set up the parent item ID
+  li.id = "childItem_" + currentChildID;
+  currentChildID++;
 
   // create the checkmark in the child item
   var checkmark = document.createElement("span");
@@ -157,15 +177,26 @@ function createNewChild() { //--------------------------------------------------
 
   // label for the new child item
   var label = document.createElement("label");
-  label.innerHTML = this.previousElementSibling.value;
+  if (itemName) {
+    label.innerHTML = itemName;
+  }
+  else {
+    label.innerHTML = this.previousElementSibling.value;
+    this.previousElementSibling.value = "";
+  }
   label.className = "todoItemLabel";
   li.appendChild(label);
-  this.previousElementSibling.value = "";
+  //parentItem.children[1].children[0].value = "";
 
   // quantity for the new child item
   var quantity = document.createElement("input");
   quantity.type = "number";
-  quantity.style.display = "none";
+  if (initialQuantity) {
+    quantity.value = initialQuantity;
+  }
+  else {
+    quantity.style.display = "none";
+  }
   li.appendChild(quantity);
 
   // edit button for the new child item
@@ -216,9 +247,14 @@ function createNewChild() { //--------------------------------------------------
   }
 
   li.appendChild(deleteButton);
-  var list = this.parentNode.parentNode;
 
-  list.appendChild(li);
+  if (typeof parentID == "number") {
+    parentItem.appendChild(li);
+  }
+  else {
+    var list = this.parentNode.parentNode;
+    list.appendChild(li);
+  }
 }
 
 
@@ -229,6 +265,71 @@ localStorage.setItem("parentItem3", "parent item 3");
 
 localStorage.setItem("parentItem1_child1", "parent item 1 - child 1");
 
+createNewList("shopping list", 10);
+createNewChild(0, "apples", 0);
+
+
+let db;
+window.onload = function() {
+  let request = window.indexedDB.open('notes_db', 1);
+
+  request.onerror = function() {
+    console.log('Database failed to open');
+  };
+
+  request.onsuccess = function() {
+    console.log('Database opened successfully');
+    db = request.result;
+  };
+
+  request.onupgradeneeded = function(e) {
+    // Grab a reference to the opened database
+    let db = e.target.result;
+
+    // Create an objectStore to store our notes in (basically like a single table)
+    // including a auto-incrementing key
+    let objectStore = db.createObjectStore('notes_os', { keyPath: 'id', autoIncrement:true });
+
+    // Define what data items the objectStore will contain
+    objectStore.createIndex('type', 'type', { unique: false });
+    objectStore.createIndex('parentID', 'parentID', { unique: false });
+    objectStore.createIndex('value', 'value', { unique: false });
+    objectStore.createIndex('quantity', 'quantity', { unique: false });
+
+    console.log('Database setup complete');
+  };
+
+  // Define the addData() function
+  function addData(newType, newParentID, newValue, newQuantity) {
+    // grab the values entered into the form fields and store them in an object ready for being inserted into the DB
+    let newItem = { type: newType, parentID: newParentID, value: newValue, quantity: newQuantity };
+
+    // open a read/write db transaction, ready for adding the data
+    let transaction = db.transaction(['notes_os'], 'readwrite');
+
+    // call an object store that's already been added to the database
+    let objectStore = transaction.objectStore('notes_os');
+
+    // Make a request to add our newItem object to the object store
+    let request = objectStore.add(newItem);
+
+    // Report on the success of the transaction completing, when everything is done
+    transaction.oncomplete = function() {
+      console.log('Transaction completed: database modification finished.');
+
+
+    };
+
+    transaction.onerror = function() {
+      console.log('Transaction not opened due to error');
+    };
+  }
+
+};
+
+
+
+/*
 for (const [key, value] of Object.entries(localStorage)) {
   if (key.includes("parentItem")) {
     inputField = document.createElement("input");
@@ -255,4 +356,4 @@ for (const [key, value] of Object.entries(localStorage)) {
     inputField.remove();
     console.log(value);
   }
-}
+}*/
