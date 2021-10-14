@@ -1,13 +1,9 @@
-var currentParentID = 0;
-var currentChildID = 0;
-
 function createNewList(listName, initialQuantity) {
   var ul = document.createElement("ul");
   ul.className = "list";
 
   // set up the parent item ID
-  ul.id = "parentItem_" + currentParentID;
-  currentParentID++;
+  ul.id = listName;
 
   // parent Button -------------------------------------------------------------
   var parentListItem = document.createElement("li");
@@ -67,6 +63,7 @@ function createNewList(listName, initialQuantity) {
   quantity.type = "number";
   if (initialQuantity) {
     quantity.value = initialQuantity;
+    quantity.setAttribute("readonly", true);
   } else {
     quantity.style.display = "none";
   }
@@ -144,18 +141,14 @@ function createNewList(listName, initialQuantity) {
   document.body.appendChild(ul);
 }
 
-function createNewChild(parentID, itemName, initialQuantity) { //---------------
-  if (typeof parentID == "number") {
-    var parentItem = document.getElementById("parentItem_" + parentID);
+function createNewChild(parent, itemName, initialQuantity) { //---------------
+  if (typeof parent == "string") {
+    var parentItem = document.getElementById(parent);
   }
 
   // create new child item on click
   var li = document.createElement("li");
   li.className = "list_item";
-
-  // set up the parent item ID
-  li.id = "childItem_" + currentChildID;
-  currentChildID++;
 
   // create the checkmark in the child item
   var checkmark = document.createElement("span");
@@ -193,6 +186,7 @@ function createNewChild(parentID, itemName, initialQuantity) { //---------------
   quantity.type = "number";
   if (initialQuantity) {
     quantity.value = initialQuantity;
+    quantity.setAttribute("readonly", true);
   }
   else {
     quantity.style.display = "none";
@@ -248,7 +242,7 @@ function createNewChild(parentID, itemName, initialQuantity) { //---------------
 
   li.appendChild(deleteButton);
 
-  if (typeof parentID == "number") {
+  if (typeof parent == "string") {
     parentItem.appendChild(li);
   }
   else {
@@ -259,101 +253,23 @@ function createNewChild(parentID, itemName, initialQuantity) { //---------------
 
 
 // store some items
-localStorage.setItem("parentItem1", "parent item 1");
-localStorage.setItem("parentItem2", "parent item 2");
-localStorage.setItem("parentItem3", "parent item 3");
+localStorage.setItem("parentItem0", "shopping list");
+localStorage.setItem("parentItem1", "today's");
+localStorage.setItem("parentItem2", "this big task/2");
 
-localStorage.setItem("parentItem1_child1", "parent item 1 - child 1");
+localStorage.setItem("childItem0", "shopping list/apples/4");
 
-createNewList("shopping list", 10);
-createNewChild(0, "apples", 0);
-
-
-let db;
-window.onload = function() {
-  let request = window.indexedDB.open('notes_db', 1);
-
-  request.onerror = function() {
-    console.log('Database failed to open');
-  };
-
-  request.onsuccess = function() {
-    console.log('Database opened successfully');
-    db = request.result;
-  };
-
-  request.onupgradeneeded = function(e) {
-    // Grab a reference to the opened database
-    let db = e.target.result;
-
-    // Create an objectStore to store our notes in (basically like a single table)
-    // including a auto-incrementing key
-    let objectStore = db.createObjectStore('notes_os', { keyPath: 'id', autoIncrement:true });
-
-    // Define what data items the objectStore will contain
-    objectStore.createIndex('type', 'type', { unique: false });
-    objectStore.createIndex('parentID', 'parentID', { unique: false });
-    objectStore.createIndex('value', 'value', { unique: false });
-    objectStore.createIndex('quantity', 'quantity', { unique: false });
-
-    console.log('Database setup complete');
-  };
-
-  // Define the addData() function
-  function addData(newType, newParentID, newValue, newQuantity) {
-    // grab the values entered into the form fields and store them in an object ready for being inserted into the DB
-    let newItem = { type: newType, parentID: newParentID, value: newValue, quantity: newQuantity };
-
-    // open a read/write db transaction, ready for adding the data
-    let transaction = db.transaction(['notes_os'], 'readwrite');
-
-    // call an object store that's already been added to the database
-    let objectStore = transaction.objectStore('notes_os');
-
-    // Make a request to add our newItem object to the object store
-    let request = objectStore.add(newItem);
-
-    // Report on the success of the transaction completing, when everything is done
-    transaction.oncomplete = function() {
-      console.log('Transaction completed: database modification finished.');
-
-
-    };
-
-    transaction.onerror = function() {
-      console.log('Transaction not opened due to error');
-    };
-  }
-
-};
-
-
-
-/*
+// do parents first cause order is undeterministic
 for (const [key, value] of Object.entries(localStorage)) {
   if (key.includes("parentItem")) {
-    inputField = document.createElement("input");
-    inputField.type = "text";
-    inputField.value = value;
-    inputField.className = "newListInput";
-    inputField.onclick = createNewList;
-    document.body.insertBefore(inputField, document.body.firstChild);
-    inputField.onclick();
-    inputField.remove();
-    console.log(value);
+    const arguments = value.split("/");
+    createNewList(arguments[0], arguments[1]);
   }
 }
-
+// do children second
 for (const [key, value] of Object.entries(localStorage)) {
-  if (key.includes("_child")) {
-    inputField = document.createElement("input");
-    inputField.type = "text";
-    inputField.value = value;
-    inputField.className = "newListInput";
-    inputField.onclick = createNewList;
-    document.body.insertBefore(inputField, document.body.firstChild);
-    inputField.onclick();
-    inputField.remove();
-    console.log(value);
+  if (key.includes("childItem")) {
+    const arguments = value.split("/");
+    createNewChild(arguments[0], arguments[1], arguments[2]);
   }
-}*/
+}
