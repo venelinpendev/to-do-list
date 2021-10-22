@@ -48,6 +48,10 @@
   overflow: hidden;
 }
 
+.parent_item {
+  background-color: #d5d5d5;
+}
+
 input[type=number] {
   font-size: 20px;
   width: 100px;
